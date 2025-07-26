@@ -19,5 +19,6 @@
 #include "infiniop/tensor_descriptor.h"
 
 #include "infiniop/ops/sin.h"
+#include "infiniop/ops/cos.h"
 
 #endif // __INFINIOP_API_H__
