@@ -20,5 +20,6 @@
 
 #include "infiniop/ops/sin.h"
 #include "infiniop/ops/cos.h"
+#include "infiniop/ops/tanh.h"
 
 #endif // __INFINIOP_API_H__

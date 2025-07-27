@@ -72,8 +72,8 @@ NUM_PRERUN = 10
 NUM_ITERATIONS = 1000
 
 
-def cos(y, x):
-    torch.cos(x, out=y)
+def tanh(y, x):
+    torch.tanh(x, out=y)
 
 
 def test(
@@ -98,18 +98,18 @@ def test(
         return
 
     print(
-        f"Testing Cos on {InfiniDeviceNames[device]} with shape:{shape} x_stride:{x_stride} y_stride:{y_stride} "
+        f"Testing Tanh on {InfiniDeviceNames[device]} with shape:{shape} x_stride:{x_stride} y_stride:{y_stride} "
         f"dtype:{InfiniDtypeNames[dtype]} inplace:{inplace}"
     )
 
-    cos(y.torch_tensor(), x.torch_tensor())
+    tanh(y.torch_tensor(), x.torch_tensor())
 
     if sync is not None:
         sync()
 
     descriptor = infiniopOperatorDescriptor_t()
     check_error(
-        LIBINFINIOP.infiniopCreateCosDescriptor(
+        LIBINFINIOP.infiniopCreateTanhDescriptor(
             handle,
             ctypes.byref(descriptor),
             y.descriptor,
@@ -123,15 +123,15 @@ def test(
 
     workspace_size = c_uint64(0)
     check_error(
-        LIBINFINIOP.infiniopGetCosWorkspaceSize(
+        LIBINFINIOP.infiniopGetTanhWorkspaceSize(
             descriptor, ctypes.byref(workspace_size)
         )
     )
     workspace = TestWorkspace(workspace_size.value, y.device)
 
-    def lib_cos():
+    def lib_tanh():
         check_error(
-            LIBINFINIOP.infiniopCos(
+            LIBINFINIOP.infiniopTanh(
                 descriptor,
                 workspace.data(),
                 workspace.size(),
@@ -141,7 +141,7 @@ def test(
             )
         )
 
-    lib_cos()
+    lib_tanh()
 
     atol, rtol = get_tolerance(_TOLERANCE_MAP, dtype)
     if DEBUG:
@@ -151,10 +151,10 @@ def test(
     # Profiling workflow
     if PROFILE:
         # fmt: off
-        profile_operation("PyTorch", lambda: cos(y.torch_tensor(), x.torch_tensor()), device, NUM_PRERUN, NUM_ITERATIONS)
-        profile_operation("    lib", lambda: lib_cos(), device, NUM_PRERUN, NUM_ITERATIONS)
+        profile_operation("PyTorch", lambda: tanh(y.torch_tensor(), x.torch_tensor()), device, NUM_PRERUN, NUM_ITERATIONS)
+        profile_operation("    lib", lambda: lib_tanh(), device, NUM_PRERUN, NUM_ITERATIONS)
         # fmt: on
-    check_error(LIBINFINIOP.infiniopDestroyCosDescriptor(descriptor))
+    check_error(LIBINFINIOP.infiniopDestroyTanhDescriptor(descriptor))
 
 
 if __name__ == "__main__":
