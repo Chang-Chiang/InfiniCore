@@ -23,5 +23,6 @@
 #include "infiniop/ops/tanh.h"
 
 #include "infiniop/ops/exp.h"
+#include "infiniop/ops/sigmoid.h"
 
 #endif // __INFINIOP_API_H__

@@ -72,8 +72,8 @@ NUM_PRERUN = 10
 NUM_ITERATIONS = 1000
 
 
-def exp(y, x):
-    torch.exp(x, out=y)
+def sigmoid(y, x):
+    torch.sigmoid(x, out=y)
 
 
 def test(
@@ -98,18 +98,18 @@ def test(
         return
 
     print(
-        f"Testing Exp on {InfiniDeviceNames[device]} with shape:{shape} x_stride:{x_stride} y_stride:{y_stride} "
+        f"Testing Sigmoid on {InfiniDeviceNames[device]} with shape:{shape} x_stride:{x_stride} y_stride:{y_stride} "
         f"dtype:{InfiniDtypeNames[dtype]} inplace:{inplace}"
     )
 
-    exp(y.torch_tensor(), x.torch_tensor())
+    sigmoid(y.torch_tensor(), x.torch_tensor())
 
     if sync is not None:
         sync()
 
     descriptor = infiniopOperatorDescriptor_t()
     check_error(
-        LIBINFINIOP.infiniopCreateExpDescriptor(
+        LIBINFINIOP.infiniopCreateSigmoidDescriptor(
             handle,
             ctypes.byref(descriptor),
             y.descriptor,
@@ -123,15 +123,15 @@ def test(
 
     workspace_size = c_uint64(0)
     check_error(
-        LIBINFINIOP.infiniopGetExpWorkspaceSize(
+        LIBINFINIOP.infiniopGetSigmoidWorkspaceSize(
             descriptor, ctypes.byref(workspace_size)
         )
     )
     workspace = TestWorkspace(workspace_size.value, y.device)
 
-    def lib_exp():
+    def lib_sigmoid():
         check_error(
-            LIBINFINIOP.infiniopExp(
+            LIBINFINIOP.infiniopSigmoid(
                 descriptor,
                 workspace.data(),
                 workspace.size(),
@@ -141,7 +141,7 @@ def test(
             )
         )
 
-    lib_exp()
+    lib_sigmoid()
 
     atol, rtol = get_tolerance(_TOLERANCE_MAP, dtype)
     if DEBUG:
@@ -151,10 +151,10 @@ def test(
     # Profiling workflow
     if PROFILE:
         # fmt: off
-        profile_operation("PyTorch", lambda: exp(y.torch_tensor(), x.torch_tensor()), device, NUM_PRERUN, NUM_ITERATIONS)
-        profile_operation("    lib", lambda: lib_exp(), device, NUM_PRERUN, NUM_ITERATIONS)
+        profile_operation("PyTorch", lambda: sigmoid(y.torch_tensor(), x.torch_tensor()), device, NUM_PRERUN, NUM_ITERATIONS)
+        profile_operation("    lib", lambda: lib_sigmoid(), device, NUM_PRERUN, NUM_ITERATIONS)
         # fmt: on
-    check_error(LIBINFINIOP.infiniopDestroyExpDescriptor(descriptor))
+    check_error(LIBINFINIOP.infiniopDestroySigmoidDescriptor(descriptor))
 
 
 if __name__ == "__main__":
