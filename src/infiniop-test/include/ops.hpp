@@ -21,6 +21,7 @@ DECLARE_INFINIOP_TEST(cos)
 DECLARE_INFINIOP_TEST(tanh)
 DECLARE_INFINIOP_TEST(exp)
 DECLARE_INFINIOP_TEST(sigmoid)
+DECLARE_INFINIOP_TEST(leaky_relu)
 
 #define REGISTER_INFINIOP_TEST(name)                      \
     {                                                     \
@@ -53,6 +54,7 @@ DECLARE_INFINIOP_TEST(sigmoid)
         REGISTER_INFINIOP_TEST(tanh)           \
         REGISTER_INFINIOP_TEST(exp)            \
         REGISTER_INFINIOP_TEST(sigmoid)        \
+        REGISTER_INFINIOP_TEST(leaky_relu)     \
     }
 
 namespace infiniop_test {

@@ -29,6 +29,7 @@ def run_tests(args):
         "tanh.py",
         "exp.py",
         "sigmoid.py",
+        "leaky_relu.py",
     ]:
         result = subprocess.run(
             f"python {test} {args} --debug", text=True, encoding="utf-8", shell=True

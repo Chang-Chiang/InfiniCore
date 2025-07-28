@@ -25,4 +25,6 @@
 #include "infiniop/ops/exp.h"
 #include "infiniop/ops/sigmoid.h"
 
+#include "infiniop/ops/leaky_relu.h"
+
 #endif // __INFINIOP_API_H__
